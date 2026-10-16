@@ -290,6 +290,27 @@ h3 {
   }
 }
 
+.pager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.pager .seg {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+  color: var(--text);
+}
+
+.places {
+  scroll-margin-top: 170px;
+}
+
 .dock {
   position: fixed;
   left: 0;

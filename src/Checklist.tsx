@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CUISINES, cuisineLabel, type Cuisine } from "./cuisines";
 import { FREQUENCIES, type Frequency } from "./frequency";
 import { translate, type Lang, type MessageKey } from "./i18n";
@@ -15,6 +15,8 @@ const SCOPES: Scope[] = ["all", "cbd", "suburbs"];
 const SCOPE_KEYS: Record<Scope, MessageKey> = { all: "areaAll", cbd: "areaCbd", suburbs: "areaSuburbs" };
 const inCbd = (area: string) => area.startsWith("CBD");
 
+const PAGE_SIZE = 10;
+
 const FREQ_KEYS: Record<Frequency, MessageKey> = { 1: "freq1", 2: "freq2", 3: "freq3", 4: "freq4" };
 
 export function Checklist({ lang, items, onChange }: Props) {
@@ -23,6 +25,10 @@ export function Checklist({ lang, items, onChange }: Props) {
   const [query, setQuery] = useState("");
   const [scope, setScope] = useState<Scope>("all");
   const [mineOnly, setMineOnly] = useState(false);
+  const [page, setPage] = useState(0);
+
+  // Any change to what's filtered starts again from the first page.
+  useEffect(() => setPage(0), [cuisine, query, scope, mineOnly]);
 
   const counts = useMemo(() => {
     const m = new Map<Cuisine, number>();
@@ -38,6 +44,15 @@ export function Checklist({ lang, items, onChange }: Props) {
       (!mineOnly || items[r.id] !== undefined) &&
       (!q || (r.name ?? "").toLowerCase().includes(q) || (r.zh ?? "").includes(q) || r.area.toLowerCase().includes(q)),
   );
+
+  const pages = Math.max(1, Math.ceil(shown.length / PAGE_SIZE));
+  const current = Math.min(page, pages - 1);
+  const visible = shown.slice(current * PAGE_SIZE, (current + 1) * PAGE_SIZE);
+
+  function go(next: number) {
+    setPage(next);
+    document.querySelector(".places")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   function pick(id: string, freq: Frequency) {
     const next = { ...items };
@@ -77,7 +92,7 @@ export function Checklist({ lang, items, onChange }: Props) {
       </div>
 
       <ol className="places">
-        {shown.map((r) => {
+        {visible.map((r) => {
           const picked = items[r.id];
           const [primary, secondary] = restaurantNames(r, lang);
           return (
@@ -102,6 +117,21 @@ export function Checklist({ lang, items, onChange }: Props) {
           );
         })}
       </ol>
+      {shown.length === 0 ? (
+        <p className="hint center">{t("noMatch")}</p>
+      ) : (
+        pages > 1 && (
+          <nav className="pager">
+            <button className="seg" disabled={current === 0} onClick={() => go(current - 1)}>
+              ← {t("prev")}
+            </button>
+            <span>{t("pageOf", { page: current + 1, pages, n: shown.length })}</span>
+            <button className="seg" disabled={current >= pages - 1} onClick={() => go(current + 1)}>
+              {t("next")} →
+            </button>
+          </nav>
+        )
+      )}
     </section>
   );
 }
