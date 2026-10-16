@@ -15,12 +15,13 @@ interface Props {
   addedToday: (id: string) => boolean;
   adding: string | null;
   onStep: (id: string, delta: number) => void; // a count reaching 0 takes the restaurant off the draft
+  onSet: (id: string, visits: number) => void; // typed count; 0 takes it off the draft
   onAddVisit: (id: string) => void;
 }
 
 const PAGE_SIZE = 10;
 
-export function Checklist({ lang, submitted, draft, visits, addedToday, adding, onStep, onAddVisit }: Props) {
+export function Checklist({ lang, submitted, draft, visits, addedToday, adding, onStep, onSet, onAddVisit }: Props) {
   const t = (key: MessageKey, vars?: Record<string, string | number>) => translate(lang, key, vars);
   const [cuisines, setCuisines] = useState<Cuisine[]>([]);
   const [query, setQuery] = useState("");
@@ -105,7 +106,24 @@ export function Checklist({ lang, submitted, draft, visits, addedToday, adding, 
                       <button onClick={() => onStep(r.id, -1)} aria-label="−1">
                         −
                       </button>
-                      <span>{t("visitCount", { n: drafted })}</span>
+                      <label className="typed">
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          value={drafted}
+                          aria-label={t("visitCount", { n: drafted })}
+                          onFocus={(e) => e.target.select()}
+                          onChange={(e) => {
+                            const n = Number(e.target.value.replace(/\D/g, "").slice(0, 2));
+                            if (n > 0) onSet(r.id, Math.min(MAX_INITIAL_VISITS, n));
+                          }}
+                          onBlur={(e) => {
+                            if (e.target.value.trim() === "" || Number(e.target.value) === 0) onSet(r.id, 0);
+                          }}
+                        />
+                        {t("timesUnit")}
+                      </label>
                       <button onClick={() => onStep(r.id, 1)} disabled={drafted >= MAX_INITIAL_VISITS} aria-label="+1">
                         +
                       </button>

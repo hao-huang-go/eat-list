@@ -166,6 +166,14 @@ export default function App() {
                 return { ...prev, draft };
               })
             }
+            onSet={(id, n) =>
+              persist((prev) => {
+                const draft = { ...prev.draft };
+                if (n <= 0) delete draft[id];
+                else draft[id] = Math.min(MAX_INITIAL_VISITS, n);
+                return { ...prev, draft };
+              })
+            }
             onAddVisit={(id) => void logVisit(id)}
           />
           {!submitted && (
