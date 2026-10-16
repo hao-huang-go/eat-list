@@ -55,4 +55,5 @@ export function storeSaved(saved: Saved): void {
   }
 }
 
-export const today = () => new Date().toISOString().slice(0, 10);
+// The calendar date in Melbourne, matching the server's once-a-day rule.
+export const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Australia/Melbourne" }).format(new Date());

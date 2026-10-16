@@ -68,8 +68,26 @@ export interface Ranking {
   restaurants: Record<string, [visits: number, people: number]>;
 }
 
-export async function fetchRanking(): Promise<Ranking> {
-  return json(await fetch("/api/ranking", { headers: { "x-device-id": deviceId() } }));
+export async function fetchRanking(period: "year" | "month"): Promise<Ranking> {
+  const query = period === "month" ? "?period=month" : "";
+  return json(await fetch(`/api/ranking${query}`, { headers: { "x-device-id": deviceId() } }));
+}
+
+export interface MonthStats {
+  month: string;
+  visits: number;
+  places: number;
+  newPlaces: number;
+  top: { id: string; visits: number }[];
+  active: number;
+  below: number;
+  ties: number;
+  months: string[];
+}
+
+export async function fetchMonth(id: string, month?: string): Promise<MonthStats> {
+  const query = month ? `&month=${month}` : "";
+  return json(await fetch(`/api/month?id=${encodeURIComponent(id)}${query}`));
 }
 
 export interface SharedReport {

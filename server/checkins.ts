@@ -101,6 +101,30 @@ export async function reportVisits(db: SupabaseClient, id: string): Promise<Reco
   return (data ?? {}) as Record<string, number>;
 }
 
+export interface MonthStats {
+  month: string;
+  visits: number;
+  places: number;
+  newPlaces: number;
+  top: { id: string; visits: number }[];
+  active: number; // people with any check-in that month
+  below: number;
+  ties: number;
+  months: string[]; // months this checklist has check-ins in, newest first
+}
+
+export async function monthStats(db: SupabaseClient, id: string, month: string): Promise<MonthStats | null> {
+  const { data, error } = await db.rpc("food_month_stats", { p_id: id, p_month: month });
+  if (error) throw error;
+  return (data as MonthStats | null) ?? null;
+}
+
+export async function monthRanking(db: SupabaseClient, month: string): Promise<Record<string, [number, number]>> {
+  const { data, error } = await db.rpc("food_month_ranking", { p_city: CITY, p_year: YEAR, p_month: month });
+  if (error) throw error;
+  return (data ?? {}) as Record<string, [number, number]>;
+}
+
 export async function participantCount(db: SupabaseClient): Promise<number> {
   const { count, error } = await db
     .from("food_checkins")

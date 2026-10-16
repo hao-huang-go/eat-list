@@ -1,6 +1,7 @@
 import type { Stats } from "./api";
 import { cuisineLabel, omnivoreLabel, tasteLabel } from "./cuisines";
 import { translate, type Lang, type MessageKey } from "./i18n";
+import { MonthReport } from "./MonthReport";
 import { MyRanks } from "./MyRanks";
 import { ShareButton } from "./ShareButton";
 import { buildReport } from "./yearReport";
@@ -13,10 +14,11 @@ interface Props {
   stats: Stats | null;
   shared?: boolean; // viewing someone else's report from a link
   shareId?: string | null;
+  monthRefresh?: number; // bump to reload the monthly report after a check-in
   onEdit?: () => void;
 }
 
-export function Report({ lang, year, visits, stats, shared = false, shareId = null, onEdit }: Props) {
+export function Report({ lang, year, visits, stats, shared = false, shareId = null, monthRefresh = 0, onEdit }: Props) {
   const t = (key: MessageKey, vars?: Record<string, string | number>) => translate(lang, key, vars);
   const r = buildReport(visits, stats);
   const name = (x: Restaurant) => {
@@ -94,6 +96,8 @@ export function Report({ lang, year, visits, stats, shared = false, shareId = nu
         <p className="report-foot">{t("title")} · eat-list</p>
       </div>
       {!shared && shareId && <ShareButton lang={lang} id={shareId} />}
+
+      {!shared && shareId && <MonthReport lang={lang} id={shareId} refresh={monthRefresh} />}
 
       {stats && (
         <MyRanks

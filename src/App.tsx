@@ -28,6 +28,7 @@ export default function App() {
   const [people, setPeople] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [adding, setAdding] = useState<string | null>(null);
+  const [checkins, setCheckins] = useState(0); // bumps after each +1 so the monthly report reloads
   const [error, setError] = useState<string | null>(null);
   const t = (key: MessageKey, vars?: Record<string, string | number>) => translate(lang, key, vars);
   const submitted = saved.id !== null;
@@ -89,6 +90,7 @@ export default function App() {
       const result = await addVisit(id);
       persist((prev) => ({ ...prev, visits: { ...prev.visits, [id]: result.visits }, addedOn: { ...prev.addedOn, [id]: today() } }));
       fetchStats(result.id).then((r) => setStats(r.stats)).catch(() => undefined);
+      setCheckins((n) => n + 1);
     } catch (e) {
       if (e instanceof ApiError && e.code === "already_today") {
         const known = typeof e.body.visits === "number" ? e.body.visits : null;
@@ -146,7 +148,7 @@ export default function App() {
       {error && <p className="error center">{error}</p>}
 
       {tab === "report" && submitted && (
-        <Report lang={lang} year={YEAR} visits={saved.visits} stats={stats} shareId={saved.id} onEdit={() => setTab("list")} />
+        <Report lang={lang} year={YEAR} visits={saved.visits} stats={stats} shareId={saved.id} monthRefresh={checkins} onEdit={() => setTab("list")} />
       )}
       {tab === "ranking" &&
         (submitted ? <Ranking lang={lang} mine={saved.visits} /> : <p className="panel locked">{t("rankLocked")}</p>)}

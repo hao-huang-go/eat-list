@@ -5,7 +5,15 @@ export class RateLimitError extends Error {}
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export const today = () => new Date().toISOString().slice(0, 10);
+// The calendar date in Melbourne (YYYY-MM-DD): "once a day" and months follow local time, not UTC.
+export const today = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Australia/Melbourne" }).format(new Date());
+
+// "YYYY-MM" from a query string, defaulting to the current Melbourne month; returned as its first day.
+export function parseMonth(value: string | null): string {
+  if (value === null) return `${today().slice(0, 7)}-01`;
+  if (!/^20\d\d-(0[1-9]|1[0-2])$/.test(value)) throw new InputError("month");
+  return `${value}-01`;
+}
 
 export function clientIp(request: Request): string {
   return (

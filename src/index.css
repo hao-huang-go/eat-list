@@ -925,3 +925,55 @@ textarea {
   padding: 10px 12px;
   resize: vertical;
 }
+
+.switches {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.month-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.month-head h3 {
+  margin: 0;
+}
+
+.month-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.month-stats div {
+  display: grid;
+  background: var(--eaten);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.month-stats b {
+  font-size: 26px;
+  color: var(--accent);
+  line-height: 1.1;
+}
+
+.month-stats small {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.month-ahead {
+  margin: 0 0 10px;
+  font-weight: 700;
+  color: var(--accent);
+}
