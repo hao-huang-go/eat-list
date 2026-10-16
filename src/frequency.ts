@@ -1,6 +1,6 @@
 // Visits are counts. The first checklist asks "about how many times this year" per restaurant
 // (capped, since it's from memory); afterwards visits are only added one at a time.
-export const MAX_INITIAL_VISITS = 50;
+export const MAX_INITIAL_VISITS = 10;
 
 export const isInitialVisits = (value: unknown): value is number =>
   typeof value === "number" && Number.isInteger(value) && value >= 1 && value <= MAX_INITIAL_VISITS;
