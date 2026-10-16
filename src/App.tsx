@@ -1,25 +1,29 @@
 import { useEffect, useState } from "react";
-import { fetchPeople, fetchStats, saveCheckin, type Stats } from "./api";
+import { addVisit, ApiError, fetchPeople, fetchStats, saveCheckin, type Stats } from "./api";
 import { Checklist } from "./Checklist";
 import { detectLang, saveLang, translate, type Lang, type MessageKey } from "./i18n";
+import { Ranking } from "./Ranking";
 import { Report } from "./Report";
 import { RESTAURANTS } from "./restaurants";
-import { loadSaved, storeSaved, type Saved } from "./saved";
+import { loadSaved, storeSaved, today, visitsFromDraft, type Saved } from "./saved";
 import { visitSource } from "./source";
 import { Suggest } from "./Suggest";
 
 const YEAR = 2026;
+type Tab = "list" | "ranking" | "report";
 
 export default function App() {
   const [lang, setLang] = useState<Lang>(detectLang);
   const [saved, setSaved] = useState<Saved>(loadSaved);
-  // A returning visitor with a submitted list lands on their report, refreshed.
-  const [view, setView] = useState<"list" | "report">(() => (loadSaved().id ? "report" : "list"));
+  // A returning visitor who has submitted lands on their report, refreshed.
+  const [tab, setTab] = useState<Tab>(() => (loadSaved().id ? "report" : "list"));
   const [stats, setStats] = useState<Stats | null>(null);
   const [people, setPeople] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
+  const [adding, setAdding] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const t = (key: MessageKey, vars?: Record<string, string | number>) => translate(lang, key, vars);
+  const submitted = saved.id !== null;
 
   useEffect(() => {
     visitSource();
@@ -33,31 +37,70 @@ export default function App() {
     document.title = translate(lang, "title");
   }, [lang]);
 
-  function update(items: Saved["items"]) {
-    const next = { ...saved, items };
-    setSaved(next);
-    storeSaved(next);
+  // Functional updates, so quick taps in a row each build on the last one.
+  function persist(update: (prev: Saved) => Saved) {
+    setSaved((prev) => {
+      const next = update(prev);
+      storeSaved(next);
+      return next;
+    });
   }
 
-  async function generate() {
+  async function submit() {
     setBusy(true);
     setError(null);
     try {
-      const result = await saveCheckin(saved.items);
-      const next = { items: saved.items, id: result.id };
-      setSaved(next);
-      storeSaved(next);
+      const result = await saveCheckin(saved.draft);
+      const day = today();
+      persist((prev) => ({
+        id: result.id,
+        draft: {},
+        visits: visitsFromDraft(prev.draft),
+        addedOn: Object.fromEntries(Object.keys(prev.draft).map((id) => [id, day])),
+      }));
       setStats(result.stats);
-      setView("report");
+      setTab("report");
       window.scrollTo({ top: 0 });
-    } catch {
-      setError(t("saveError"));
+    } catch (e) {
+      // This device already submitted (e.g. local data was cleared): keep the earlier list on the server.
+      if (e instanceof ApiError && e.code === "already_submitted" && typeof e.body.id === "string") {
+        const id = e.body.id;
+        persist((prev) => ({ ...prev, id }));
+        setError(t("alreadySubmitted"));
+      } else {
+        setError(t("saveError"));
+      }
     } finally {
       setBusy(false);
     }
   }
 
-  const triedCount = Object.keys(saved.items).length;
+  async function logVisit(id: string) {
+    setAdding(id);
+    setError(null);
+    try {
+      const result = await addVisit(id);
+      persist((prev) => ({ ...prev, visits: { ...prev.visits, [id]: result.visits }, addedOn: { ...prev.addedOn, [id]: today() } }));
+      fetchStats(result.id).then((r) => setStats(r.stats)).catch(() => undefined);
+    } catch (e) {
+      if (e instanceof ApiError && e.code === "already_today") {
+        const known = typeof e.body.visits === "number" ? e.body.visits : null;
+        persist((prev) => ({
+          ...prev,
+          visits: { ...prev.visits, [id]: known ?? prev.visits[id] ?? 1 },
+          addedOn: { ...prev.addedOn, [id]: today() },
+        }));
+      } else {
+        setError(t("saveError"));
+      }
+    } finally {
+      setAdding(null);
+    }
+  }
+
+  const draftCount = Object.keys(saved.draft).length;
+  const tabs: Tab[] = ["list", "ranking", "report"];
+  const tabKeys: Record<Tab, MessageKey> = { list: "tabList", ranking: "tabRanking", report: "tabReport" };
 
   return (
     <main>
@@ -79,18 +122,50 @@ export default function App() {
         </button>
       </header>
 
-      {view === "report" ? (
-        <Report lang={lang} year={YEAR} items={saved.items} stats={stats} onEdit={() => setView("list")} />
-      ) : (
-        <>
-          <Checklist lang={lang} items={saved.items} onChange={update} />
-          <div className="dock">
-            <span>{t("tried", { n: triedCount, total: RESTAURANTS.length })}</span>
-            <button className="primary" disabled={busy || triedCount === 0} onClick={() => void generate()}>
-              {busy ? t("generating") : triedCount === 0 ? t("pickOne") : t("generate")}
+      <nav className="tabs" role="tablist">
+        {tabs
+          .filter((x) => x !== "report" || submitted)
+          .map((x) => (
+            <button key={x} role="tab" aria-selected={tab === x} className={tab === x ? "tab on" : "tab"} onClick={() => setTab(x)}>
+              {t(tabKeys[x])}
             </button>
-          </div>
-          {error && <p className="error center">{error}</p>}
+          ))}
+      </nav>
+
+      {error && <p className="error center">{error}</p>}
+
+      {tab === "report" && submitted && (
+        <Report lang={lang} year={YEAR} visits={saved.visits} stats={stats} onEdit={() => setTab("list")} />
+      )}
+      {tab === "ranking" &&
+        (submitted ? <Ranking lang={lang} mine={saved.visits} /> : <p className="panel locked">{t("rankLocked")}</p>)}
+      {tab === "list" && (
+        <>
+          <Checklist
+            lang={lang}
+            submitted={submitted}
+            draft={saved.draft}
+            visits={saved.visits}
+            addedToday={(id) => saved.addedOn[id] === today()}
+            adding={adding}
+            onPick={(id, freq) =>
+              persist((prev) => {
+                const draft = { ...prev.draft };
+                if (draft[id] === freq) delete draft[id];
+                else draft[id] = freq;
+                return { ...prev, draft };
+              })
+            }
+            onAddVisit={(id) => void logVisit(id)}
+          />
+          {!submitted && (
+            <div className="dock">
+              <span>{t("tried", { n: draftCount, total: RESTAURANTS.length })}</span>
+              <button className="primary" disabled={busy || draftCount === 0} onClick={() => void submit()}>
+                {busy ? t("generating") : draftCount === 0 ? t("pickOne") : t("generate")}
+              </button>
+            </div>
+          )}
         </>
       )}
 

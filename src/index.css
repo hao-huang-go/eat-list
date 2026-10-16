@@ -123,6 +123,122 @@ h3 {
   font-size: 13px;
 }
 
+.tabs {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.tab {
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: 12px;
+  padding: 9px 0;
+  font-weight: 600;
+}
+
+.tab.on {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.locked {
+  text-align: center;
+  color: var(--muted);
+}
+
+.area {
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: 10px;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text);
+  max-width: 60%;
+}
+
+.visit {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.count {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.plus {
+  border: 1px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.board {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.board li {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px 14px;
+}
+
+.board li.mine {
+  border-color: var(--accent);
+  background: var(--eaten);
+}
+
+.medal {
+  font-weight: 800;
+  color: var(--muted);
+  text-align: center;
+}
+
+.medal.top {
+  color: var(--accent);
+  font-size: 18px;
+}
+
+.score {
+  display: grid;
+  text-align: right;
+}
+
+.score b {
+  color: var(--accent);
+}
+
+.score small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.report-visits {
+  margin: 4px 0 0;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
 /* Checklist */
 
 .filters {
@@ -287,6 +403,10 @@ h3 {
   .freqs {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
+  }
+
+  .visit {
+    justify-content: space-between;
   }
 }
 

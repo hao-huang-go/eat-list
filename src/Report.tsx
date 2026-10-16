@@ -1,6 +1,5 @@
 import type { Stats } from "./api";
 import { cuisineLabel, omnivoreLabel, tasteLabel } from "./cuisines";
-import type { Frequency } from "./frequency";
 import { translate, type Lang, type MessageKey } from "./i18n";
 import { buildReport } from "./yearReport";
 import { RESTAURANTS, restaurantNames, type Restaurant } from "./restaurants";
@@ -8,16 +7,14 @@ import { RESTAURANTS, restaurantNames, type Restaurant } from "./restaurants";
 interface Props {
   lang: Lang;
   year: number;
-  items: Record<string, Frequency>;
+  visits: Record<string, number>;
   stats: Stats | null;
   onEdit: () => void;
 }
 
-const TIMES: Record<Frequency, MessageKey> = { 1: "times1", 2: "times2", 3: "times3", 4: "times4" };
-
-export function Report({ lang, year, items, stats, onEdit }: Props) {
+export function Report({ lang, year, visits, stats, onEdit }: Props) {
   const t = (key: MessageKey, vars?: Record<string, string | number>) => translate(lang, key, vars);
-  const r = buildReport(items, stats);
+  const r = buildReport(visits, stats);
   const name = (x: Restaurant) => {
     const [primary, secondary] = restaurantNames(x, lang);
     return (
@@ -38,6 +35,7 @@ export function Report({ lang, year, items, stats, onEdit }: Props) {
           {r.tried}
           <span> / {RESTAURANTS.length}</span>
         </p>
+        <p className="report-visits">{t("reportVisits", { n: r.totalVisits })}</p>
         <p className="report-beat">{r.beatPct === null ? t("beatSolo") : t("beat", { n: r.beatPct })}</p>
 
         <dl className="report-facts">
@@ -45,7 +43,7 @@ export function Report({ lang, year, items, stats, onEdit }: Props) {
             <div>
               <dt>{t("favourite")}</dt>
               <dd>
-                {name(r.favourite.restaurant)} <small>{t(TIMES[r.favourite.freq])}</small>
+                {name(r.favourite.restaurant)} <small>{t("visitCount", { n: r.favourite.visits })}</small>
               </dd>
             </div>
           )}
@@ -109,22 +107,6 @@ export function Report({ lang, year, items, stats, onEdit }: Props) {
             <span>100+</span>
           </div>
           <p className="hint">{t("distributionNote", { n: stats.n, median: Math.round(stats.median) })}</p>
-        </div>
-      )}
-
-      {stats && stats.n > 1 && r.popular.length > 0 && (
-        <div className="panel">
-          <h3>{t("popular")}</h3>
-          <ol className="rank numbered">
-            {r.popular.map((x) => (
-              <li key={x.restaurant.id} className={items[x.restaurant.id] ? "mine" : ""}>
-                <b>{name(x.restaurant)}</b>
-                <small>
-                  {x.restaurant.area} · {x.pct}%
-                </small>
-              </li>
-            ))}
-          </ol>
         </div>
       )}
 

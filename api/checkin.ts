@@ -2,7 +2,8 @@ import { checkinStats, parseCheckin, saveCheckin } from "../server/checkins.js";
 import { clientIp, hashDevice, hashIp, InputError, parseId, today } from "../server/request.js";
 import { supabaseFromEnv } from "../server/supabase.js";
 
-// Save this device's checklist (replacing any earlier one) and return its ranking.
+// Save this device's first checklist and return its ranking. A device submits once; after that it can
+// only add visits (api/visit), so a second submit returns the existing checklist instead.
 export async function POST(request: Request): Promise<Response> {
   let input;
   try {
@@ -16,7 +17,8 @@ export async function POST(request: Request): Promise<Response> {
   const db = supabaseFromEnv();
   const day = today();
   try {
-    const id = await saveCheckin(db, input, deviceHash, hashIp(clientIp(request), day), day);
+    const { id, created } = await saveCheckin(db, input, deviceHash, hashIp(clientIp(request), day), day);
+    if (!created) return Response.json({ error: "already_submitted", id }, { status: 409 });
     return Response.json({ id, stats: await checkinStats(db, id) });
   } catch (e) {
     console.error("checkin save failed", { errorType: e instanceof Error ? e.name : typeof e });
