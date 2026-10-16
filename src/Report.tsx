@@ -3,7 +3,7 @@ import { cuisineLabel, omnivoreLabel, tasteLabel } from "./cuisines";
 import type { Frequency } from "./frequency";
 import { translate, type Lang, type MessageKey } from "./i18n";
 import { buildReport } from "./yearReport";
-import { RESTAURANTS, type Restaurant } from "./restaurants";
+import { RESTAURANTS, restaurantNames, type Restaurant } from "./restaurants";
 
 interface Props {
   lang: Lang;
@@ -18,7 +18,15 @@ const TIMES: Record<Frequency, MessageKey> = { 1: "times1", 2: "times2", 3: "tim
 export function Report({ lang, year, items, stats, onEdit }: Props) {
   const t = (key: MessageKey, vars?: Record<string, string | number>) => translate(lang, key, vars);
   const r = buildReport(items, stats);
-  const name = (x: Restaurant) => (lang === "zh" && x.zh ? x.zh : x.name);
+  const name = (x: Restaurant) => {
+    const [primary, secondary] = restaurantNames(x, lang);
+    return (
+      <>
+        {primary}
+        {secondary && <span className="alt">{secondary}</span>}
+      </>
+    );
+  };
   const tallest = Math.max(1, ...(stats?.hist ?? [0]));
   const myBin = Math.min(9, Math.floor(r.tried / 10));
 

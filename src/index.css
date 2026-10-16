@@ -204,6 +204,12 @@ h3 {
   font-size: 15px;
 }
 
+.alt {
+  margin-left: 6px;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
 .place-name small {
   color: var(--muted);
   font-size: 12px;

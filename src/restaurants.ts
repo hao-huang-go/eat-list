@@ -3,7 +3,7 @@ import type { Cuisine } from "./cuisines.js";
 
 export interface Restaurant {
   id: string;
-  name: string;
+  name: string | null; // the English name the restaurant itself uses; null rather than a translation
   zh: string | null;
   area: string;
   cuisine: Cuisine;
@@ -14,7 +14,7 @@ export const RESTAURANTS: Restaurant[] = [
   { id: "max-on-hardware", name: "Max on Hardware", zh: null, area: "CBD", cuisine: "western" },
   { id: "operator-25", name: "Operator 25", zh: null, area: "CBD", cuisine: "brunch" },
   { id: "mckinly-eatery", name: "MCKINLY Eatery", zh: null, area: "Balwyn", cuisine: "brunch" },
-  { id: "cai-yun-nan", name: "Cai Yun Nan Yunnan Restaurant", zh: "彩云南", area: "Carlton", cuisine: "noodles" },
+  { id: "cai-yun-nan", name: null, zh: "彩云南", area: "Carlton", cuisine: "noodles" },
   { id: "seven-star-grill-pocha", name: "Seven Star Grill & Pocha", zh: null, area: "CBD", cuisine: "korean" },
   { id: "upstairs-360", name: "Upstairs 360", zh: null, area: "CBD", cuisine: "korean" },
   { id: "charcoal-chan", name: "Charcoal Chan", zh: "幸福小串", area: "Glen Waverley", cuisine: "bbq" },
@@ -22,17 +22,17 @@ export const RESTAURANTS: Restaurant[] = [
   { id: "doh-daily-oven-heaven", name: "DOH - Daily Oven Heaven", zh: null, area: "CBD", cuisine: "dessert" },
   { id: "plus-coffee-kitchen", name: "Plus Coffee & Kitchen", zh: null, area: "Carlton", cuisine: "brunch" },
   { id: "zero-mode", name: "Zero Mode", zh: null, area: "CBD", cuisine: "western" },
-  { id: "zhu-guang-yu", name: "Zhu Guang Yu Hotpot", zh: "朱光玉火锅馆", area: "CBD", cuisine: "hotpot" },
-  { id: "da-ya-li", name: "Da Ya Li", zh: "大鸭梨", area: "东南区", cuisine: "chinese" },
+  { id: "zhu-guang-yu", name: null, zh: "朱光玉火锅馆", area: "CBD", cuisine: "hotpot" },
+  { id: "da-ya-li", name: null, zh: "大鸭梨", area: "东南区", cuisine: "chinese" },
   { id: "higher-ground", name: "Higher Ground", zh: null, area: "CBD", cuisine: "brunch" },
-  { id: "golden-noodle-house", name: "Golden Noodle House", zh: "万里金汤", area: "Box Hill", cuisine: "noodles" },
+  { id: "golden-noodle-house", name: null, zh: "万里金汤", area: "Box Hill", cuisine: "noodles" },
   { id: "pho-thin", name: "Pho Thin", zh: null, area: "Springvale", cuisine: "southeast_asian" },
   { id: "kumo", name: "Kumo Brewhouse / Kumo Desserts", zh: null, area: "CBD", cuisine: "dessert" },
   { id: "pochana", name: "Pochana", zh: null, area: "CBD", cuisine: "southeast_asian" },
   { id: "pho-le", name: "Pho Le", zh: null, area: "CBD", cuisine: "southeast_asian" },
   { id: "izakaya-domo", name: "Izakaya Domo", zh: null, area: "CBD", cuisine: "japanese" },
   { id: "rose-garden-bbq", name: "Rose Garden BBQ", zh: "玫瑰苑烧腊", area: "CBD", cuisine: "cantonese" },
-  { id: "nong-geng-ji", name: "Nong Geng Ji Hunan Cuisine", zh: "农耕记", area: "Box Hill", cuisine: "sichuan_hunan" },
+  { id: "nong-geng-ji", name: null, zh: "农耕记", area: "Box Hill", cuisine: "sichuan_hunan" },
   { id: "solcho", name: "Solcho", zh: null, area: "CBD", cuisine: "korean" },
   { id: "rare-steakhouse", name: "Rare Steakhouse", zh: null, area: "CBD", cuisine: "western" },
   { id: "khaosan-lane", name: "Khaosan Lane", zh: null, area: "CBD", cuisine: "southeast_asian" },
@@ -64,7 +64,7 @@ export const RESTAURANTS: Restaurant[] = [
   { id: "faradays-cage", name: "Faraday's Cage", zh: null, area: "Fitzroy", cuisine: "brunch" },
   { id: "humble-rays", name: "Humble Rays", zh: null, area: "Carlton", cuisine: "brunch" },
   { id: "hardware-societe", name: "The Hardware Société", zh: null, area: "CBD", cuisine: "brunch" },
-  { id: "wang-jian-guo-hotpot", name: "Wang Jian Guo Hotpot", zh: "王建国火锅", area: "Glen Waverley", cuisine: "hotpot" },
+  { id: "wang-jian-guo-hotpot", name: null, zh: "王建国火锅", area: "Glen Waverley", cuisine: "hotpot" },
   { id: "minamishima", name: "Minamishima", zh: null, area: "Richmond", cuisine: "japanese" },
   { id: "ishizuka", name: "Ishizuka", zh: null, area: "CBD", cuisine: "japanese" },
   { id: "pho-hung-vuong-2", name: "Pho Hung Vuong 2", zh: null, area: "Richmond", cuisine: "southeast_asian" },
@@ -78,15 +78,15 @@ export const RESTAURANTS: Restaurant[] = [
   { id: "katsuhon", name: "Katsuhon", zh: null, area: "CBD", cuisine: "japanese" },
   { id: "thai-town", name: "Thai Town", zh: null, area: "CBD", cuisine: "southeast_asian" },
   { id: "lanzhou-1915", name: "1915 Lanzhou Beef Noodle", zh: "1915兰州拉面", area: "CBD", cuisine: "noodles" },
-  { id: "northern-chinese-kitchen", name: "Northern Chinese Kitchen", zh: "东北菜", area: "Box Hill South", cuisine: "chinese" },
-  { id: "hunan-kitchen-clayton", name: "Hunan Kitchen", zh: "湘当有味", area: "Clayton", cuisine: "sichuan_hunan" },
+  { id: "northern-chinese-kitchen", name: null, zh: "东北菜", area: "Box Hill South", cuisine: "chinese" },
+  { id: "hunan-kitchen-clayton", name: null, zh: "湘当有味", area: "Clayton", cuisine: "sichuan_hunan" },
   { id: "shyun", name: "Shyun", zh: null, area: "Carnegie", cuisine: "japanese" },
-  { id: "niu-yi-hotpot", name: "Niu Yi Chaoshan Beef Hotpot", zh: "牛一潮汕牛肉火锅", area: "Glen Waverley", cuisine: "hotpot" },
+  { id: "niu-yi-hotpot", name: null, zh: "牛一潮汕牛肉火锅", area: "Glen Waverley", cuisine: "hotpot" },
   { id: "dong-dae-moon", name: "Dong Dae Moon", zh: null, area: "CBD", cuisine: "korean" },
-  { id: "gan-ji-noodle", name: "Gan Ji Noodle", zh: "甘记", area: "CBD", cuisine: "noodles" },
-  { id: "qian-zhuang", name: "Qian Zhuang Guizhou Noodle", zh: "黔庄", area: "CBD", cuisine: "noodles" },
-  { id: "mengziyuan", name: "Mengziyuan Yunnan Noodle", zh: "蒙自源", area: "CBD", cuisine: "noodles" },
-  { id: "jia-tian-xia", name: "Jia Tian Xia Guilin Rice Noodle", zh: "甲天下", area: "CBD", cuisine: "noodles" },
+  { id: "gan-ji-noodle", name: null, zh: "甘记", area: "CBD", cuisine: "noodles" },
+  { id: "qian-zhuang", name: null, zh: "黔庄", area: "CBD", cuisine: "noodles" },
+  { id: "mengziyuan", name: null, zh: "蒙自源", area: "CBD", cuisine: "noodles" },
+  { id: "jia-tian-xia", name: null, zh: "甲天下", area: "CBD", cuisine: "noodles" },
   { id: "joomak", name: "Joomak", zh: null, area: "CBD", cuisine: "korean" },
   { id: "paiks-noodle", name: "Paik's Noodle", zh: null, area: "CBD", cuisine: "korean" },
   { id: "gangnam-pocha", name: "Gangnam Pocha", zh: null, area: "CBD", cuisine: "korean" },
@@ -99,15 +99,21 @@ export const RESTAURANTS: Restaurant[] = [
   { id: "dannys-kopitiam", name: "Danny's Kopitiam", zh: null, area: "Glen Waverley", cuisine: "southeast_asian" },
   { id: "ramanraman", name: "RamanRaman", zh: null, area: "Glen Waverley", cuisine: "japanese" },
   { id: "secret-kitchen", name: "Secret Kitchen Chinatown", zh: null, area: "CBD", cuisine: "cantonese" },
-  { id: "yongzhou-beef", name: "Yongzhou Beef Hotpot", zh: "永周记潮汕牛肉火锅", area: "CBD", cuisine: "hotpot" },
+  { id: "yongzhou-beef", name: null, zh: "永周记潮汕牛肉火锅", area: "CBD", cuisine: "hotpot" },
   { id: "chinger-biang-biang", name: "Chinger Biang Biang Noodle", zh: null, area: "CBD", cuisine: "noodles" },
   { id: "davids-master-pot", name: "David's Master Pot", zh: null, area: "CBD", cuisine: "sichuan_hunan" },
-  { id: "mu-fu-rong", name: "Mu Fu Rong Hunan", zh: "慕芙蓉", area: "Doncaster", cuisine: "sichuan_hunan" },
-  { id: "cheng-fu-ji", name: "Cheng Fu Ji Chaoshan Beef Hotpot", zh: "程福记", area: "东区", cuisine: "hotpot" },
-  { id: "hei-man-nin", name: "Hei Man Nin Cantonese", zh: "喜万年", area: "Box Hill", cuisine: "cantonese" },
+  { id: "mu-fu-rong", name: null, zh: "慕芙蓉", area: "Doncaster", cuisine: "sichuan_hunan" },
+  { id: "cheng-fu-ji", name: null, zh: "程福记", area: "东区", cuisine: "hotpot" },
+  { id: "hei-man-nin", name: null, zh: "喜万年", area: "Box Hill", cuisine: "cantonese" },
   { id: "crystal-jade", name: "Crystal Jade", zh: null, area: "CBD", cuisine: "cantonese" },
   { id: "shark-fin-inn", name: "Shark Fin Inn", zh: null, area: "CBD", cuisine: "cantonese" },
   { id: "seven-seeds", name: "Seven Seeds", zh: null, area: "Carlton", cuisine: "brunch" },
 ];
+
+// The name to lead with in this language, then the other one if the restaurant has both.
+export function restaurantNames(r: Restaurant, lang: "zh" | "en"): [primary: string, secondary: string | null] {
+  const [first, second] = lang === "zh" ? [r.zh, r.name] : [r.name, r.zh];
+  return first ? [first, second] : [second ?? r.id, null];
+}
 
 export const RESTAURANT_IDS = new Set(RESTAURANTS.map((r) => r.id));

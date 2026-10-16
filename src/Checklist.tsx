@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { CUISINES, cuisineLabel, type Cuisine } from "./cuisines";
 import { FREQUENCIES, type Frequency } from "./frequency";
 import { translate, type Lang, type MessageKey } from "./i18n";
-import { RESTAURANTS } from "./restaurants";
+import { RESTAURANTS, restaurantNames } from "./restaurants";
 
 interface Props {
   lang: Lang;
@@ -27,7 +27,7 @@ export function Checklist({ lang, items, onChange }: Props) {
   const shown = RESTAURANTS.filter(
     (r) =>
       (!cuisine || r.cuisine === cuisine) &&
-      (!q || r.name.toLowerCase().includes(q) || (r.zh ?? "").includes(q) || r.area.toLowerCase().includes(q)),
+      (!q || (r.name ?? "").toLowerCase().includes(q) || (r.zh ?? "").includes(q) || r.area.toLowerCase().includes(q)),
   );
 
   function pick(id: string, freq: Frequency) {
@@ -57,16 +57,19 @@ export function Checklist({ lang, items, onChange }: Props) {
       <ol className="places">
         {shown.map((r) => {
           const picked = items[r.id];
+          const [primary, secondary] = restaurantNames(r, lang);
           return (
             <li key={r.id} className={picked ? "place eaten" : "place"}>
               <div className="place-name">
-                <b>{lang === "zh" && r.zh ? r.zh : r.name}</b>
+                <b>
+                  {primary}
+                  {secondary && <span className="alt">{secondary}</span>}
+                </b>
                 <small>
-                  {lang === "zh" && r.zh ? `${r.name} · ` : ""}
                   {r.area} · {cuisineLabel(r.cuisine, lang)}
                 </small>
               </div>
-              <div className="freqs" role="group" aria-label={r.name}>
+              <div className="freqs" role="group" aria-label={primary}>
                 {FREQUENCIES.map((f) => (
                   <button key={f} aria-pressed={picked === f} className={picked === f ? "freq on" : "freq"} onClick={() => pick(r.id, f)}>
                     {t(FREQ_KEYS[f])}
