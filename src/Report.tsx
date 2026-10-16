@@ -1,6 +1,7 @@
 import type { Stats } from "./api";
 import { cuisineLabel, omnivoreLabel, tasteLabel } from "./cuisines";
 import { translate, type Lang, type MessageKey } from "./i18n";
+import { MyRanks } from "./MyRanks";
 import { ShareButton } from "./ShareButton";
 import { buildReport } from "./yearReport";
 import { RESTAURANTS, restaurantNames, type Restaurant } from "./restaurants";
@@ -43,6 +44,18 @@ export function Report({ lang, year, visits, stats, shared = false, shareId = nu
           {r.beatPct === null ? (shared ? t("beatSoloShared") : t("beatSolo")) : t("beat", { n: r.beatPct })}
         </p>
 
+        {stats?.fans?.[0] && (() => {
+          const top = stats.fans[0];
+          const restaurant = RESTAURANTS.find((x) => x.id === top.id);
+          if (!restaurant) return null;
+          const [fanName] = restaurantNames(restaurant, lang);
+          return (
+            <p className="report-fan">
+              {["🥇", "🥈", "🥉"][top.place - 1]} {t(top.place === 1 ? "fanTop" : "fanPlace", { name: fanName, place: top.place })}
+            </p>
+          );
+        })()}
+
         <dl className="report-facts">
           {r.favourite && (
             <div>
@@ -81,6 +94,16 @@ export function Report({ lang, year, visits, stats, shared = false, shareId = nu
         <p className="report-foot">{t("title")} · eat-list</p>
       </div>
       {!shared && shareId && <ShareButton lang={lang} id={shareId} />}
+
+      {stats && (
+        <MyRanks
+          lang={lang}
+          stats={stats}
+          tried={r.tried}
+          shared={shared}
+          favouriteName={r.favourite ? restaurantNames(r.favourite.restaurant, lang)[0] : null}
+        />
+      )}
 
       {!shared && r.todo.length > 0 && (
         <div className="panel">

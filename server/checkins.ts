@@ -85,6 +85,8 @@ export interface CheckinStats {
   median: number;
   hist: number[];
   popularity: Record<string, number>;
+  metrics: Record<"visits" | "cuisines" | "areas" | "loyalty" | "niche", { mine: number; below: number; ties: number }>;
+  fans: { id: string; place: number; people: number }[];
 }
 
 export async function checkinStats(db: SupabaseClient, id: string): Promise<CheckinStats | null> {

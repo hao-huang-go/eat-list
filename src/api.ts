@@ -1,6 +1,15 @@
 import { deviceId } from "./device";
 import { visitSource } from "./source";
 
+
+export interface Rank {
+  mine: number;
+  below: number; // people with a lower value
+  ties: number; // people with the same value, including this person
+}
+
+export type MetricKey = "visits" | "cuisines" | "areas" | "loyalty" | "niche";
+
 export interface Stats {
   n: number;
   below: number;
@@ -8,6 +17,8 @@ export interface Stats {
   median: number;
   hist: number[];
   popularity: Record<string, number>;
+  metrics?: Record<MetricKey, Rank>;
+  fans?: { id: string; place: number; people: number }[]; // restaurants where this person is a top-3 regular
 }
 
 export interface CheckinResult {
