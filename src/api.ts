@@ -96,6 +96,18 @@ export async function sendSuggestion(name: string, area: string): Promise<void> 
   );
 }
 
+export type FeedbackWant = "more_places" | "sydney" | "friends" | "nearby" | "monthly" | "other";
+
+export async function sendFeedback(input: { wants: FeedbackWant[]; message: string; lang: string; submitted: boolean }): Promise<void> {
+  await json(
+    await fetch("/api/feedback", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(input),
+    }),
+  );
+}
+
 export async function fetchPeople(): Promise<number | null> {
   try {
     const res = await fetch("/api/participants");

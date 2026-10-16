@@ -9,6 +9,8 @@ import { MAX_INITIAL_VISITS } from "./frequency";
 import { loadSaved, storeSaved, today, type Saved } from "./saved";
 import { visitSource } from "./source";
 import { SharedView } from "./SharedView";
+import { CoffeeCard } from "./CoffeeCard";
+import { FeedbackCard } from "./FeedbackCard";
 import { Suggest } from "./Suggest";
 
 const YEAR = 2026;
@@ -148,6 +150,7 @@ export default function App() {
       )}
       {tab === "ranking" &&
         (submitted ? <Ranking lang={lang} mine={saved.visits} /> : <p className="panel locked">{t("rankLocked")}</p>)}
+      {submitted && tab !== "list" && <CoffeeCard lang={lang} />}
       {tab === "list" && (
         <>
           <Checklist
@@ -188,6 +191,7 @@ export default function App() {
       )}
 
       <Suggest lang={lang} />
+      <FeedbackCard lang={lang} submitted={submitted} />
         </>
       )}
       <footer>{t("footer")}</footer>

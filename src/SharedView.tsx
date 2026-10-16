@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchSharedReport, type SharedReport } from "./api";
 import { translate, type Lang } from "./i18n";
+import { CoffeeCard } from "./CoffeeCard";
 import { Report } from "./Report";
 
 // Someone else's report, opened from a shared link: read-only, with a way in for the viewer.
@@ -20,6 +21,7 @@ export function SharedView({ lang, id }: { lang: Lang; id: string }) {
       <a className="primary wide cta" href="/">
         {translate(lang, "sharedCta")}
       </a>
+      <CoffeeCard lang={lang} />
     </>
   );
 }
