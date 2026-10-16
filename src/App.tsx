@@ -8,10 +8,14 @@ import { RESTAURANTS } from "./restaurants";
 import { MAX_INITIAL_VISITS } from "./frequency";
 import { loadSaved, storeSaved, today, type Saved } from "./saved";
 import { visitSource } from "./source";
+import { SharedView } from "./SharedView";
 import { Suggest } from "./Suggest";
 
 const YEAR = 2026;
 type Tab = "list" | "ranking" | "report";
+
+// /r/<id> is a shared report.
+const sharedId = /^\/r\/([0-9a-f-]{36})\/?$/i.exec(window.location.pathname)?.[1] ?? null;
 
 export default function App() {
   const [lang, setLang] = useState<Lang>(detectLang);
@@ -123,6 +127,10 @@ export default function App() {
         </button>
       </header>
 
+      {sharedId ? (
+        <SharedView lang={lang} id={sharedId} />
+      ) : (
+        <>
       <nav className="tabs" role="tablist">
         {tabs
           .filter((x) => x !== "report" || submitted)
@@ -136,7 +144,7 @@ export default function App() {
       {error && <p className="error center">{error}</p>}
 
       {tab === "report" && submitted && (
-        <Report lang={lang} year={YEAR} visits={saved.visits} stats={stats} onEdit={() => setTab("list")} />
+        <Report lang={lang} year={YEAR} visits={saved.visits} stats={stats} shareId={saved.id} onEdit={() => setTab("list")} />
       )}
       {tab === "ranking" &&
         (submitted ? <Ranking lang={lang} mine={saved.visits} /> : <p className="panel locked">{t("rankLocked")}</p>)}
@@ -172,6 +180,8 @@ export default function App() {
       )}
 
       <Suggest lang={lang} />
+        </>
+      )}
       <footer>{t("footer")}</footer>
     </main>
   );

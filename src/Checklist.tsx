@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { AreaPicker } from "./AreaPicker";
 import { cuisineLabel, type Cuisine } from "./cuisines";
-import { CuisineChips } from "./CuisineChips";
-import { matchesArea, matchesCuisine, type Area } from "./filters";
+import { FilterPanel } from "./FilterPanel";
+import { matchesAreas, matchesCuisines, type Area } from "./filters";
 import { MAX_INITIAL_VISITS } from "./frequency";
 import { translate, type Lang, type MessageKey } from "./i18n";
 import { RESTAURANTS, restaurantNames } from "./restaurants";
@@ -23,21 +22,21 @@ const PAGE_SIZE = 10;
 
 export function Checklist({ lang, submitted, draft, visits, addedToday, adding, onStep, onAddVisit }: Props) {
   const t = (key: MessageKey, vars?: Record<string, string | number>) => translate(lang, key, vars);
-  const [cuisine, setCuisine] = useState<Cuisine | null>(null);
+  const [cuisines, setCuisines] = useState<Cuisine[]>([]);
   const [query, setQuery] = useState("");
-  const [area, setArea] = useState<Area>("all");
+  const [areas, setAreas] = useState<Area[]>([]);
   const [mineOnly, setMineOnly] = useState(false);
   const [page, setPage] = useState(0);
 
   // Any change to what's filtered starts again from the first page.
-  useEffect(() => setPage(0), [cuisine, query, area, mineOnly]);
+  useEffect(() => setPage(0), [cuisines, query, areas, mineOnly]);
 
   const isMine = (id: string) => (submitted ? visits[id] !== undefined : draft[id] !== undefined);
   const q = query.trim().toLowerCase();
   const shown = RESTAURANTS.filter(
     (r) =>
-      matchesCuisine(r, cuisine) &&
-      matchesArea(r, area) &&
+      matchesCuisines(r, cuisines) &&
+      matchesAreas(r, areas) &&
       (!mineOnly || isMine(r.id)) &&
       (!q || (r.name ?? "").toLowerCase().includes(q) || (r.zh ?? "").includes(q) || r.area.toLowerCase().includes(q)),
   );
@@ -54,9 +53,16 @@ export function Checklist({ lang, submitted, draft, visits, addedToday, adding, 
     <section className="checklist">
       <div className="filters">
         <input className="search" type="search" placeholder={t("search")} value={query} onChange={(e) => setQuery(e.target.value)} />
-        <CuisineChips lang={lang} value={cuisine} onChange={setCuisine} />
         <div className="toggles">
-          <AreaPicker lang={lang} value={area} onChange={setArea} />
+          <FilterPanel
+            lang={lang}
+            cuisines={cuisines}
+            areas={areas}
+            onChange={(next) => {
+              setCuisines(next.cuisines);
+              setAreas(next.areas);
+            }}
+          />
           <label className="check">
             <input type="checkbox" checked={mineOnly} onChange={(e) => setMineOnly(e.target.checked)} />
             {t("mineOnly")}

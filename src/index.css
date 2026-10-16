@@ -41,8 +41,8 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Segoe UI", "Microsoft YaHei", sans-serif;
-  font-size: 15px;
-  line-height: 1.5;
+  font-size: 16px;
+  line-height: 1.55;
 }
 
 main {
@@ -110,7 +110,7 @@ h3 {
 
 .hint {
   margin: 8px 0 0;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
 }
 
@@ -135,7 +135,8 @@ h3 {
   border: 1px solid var(--line);
   background: var(--card);
   border-radius: 12px;
-  padding: 9px 0;
+  padding: 10px 0;
+  font-size: 16px;
   font-weight: 600;
 }
 
@@ -148,6 +149,36 @@ h3 {
 .locked {
   text-align: center;
   color: var(--muted);
+}
+
+.share {
+  margin-top: 14px;
+}
+
+.share-url {
+  width: 100%;
+  margin-top: 8px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.shared-kicker {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.cta {
+  display: block;
+  margin-top: 18px;
+  padding: 14px 18px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 17px;
 }
 
 .area {
@@ -169,7 +200,7 @@ h3 {
 }
 
 .count {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--accent);
 }
@@ -179,8 +210,8 @@ h3 {
   background: var(--accent-soft);
   color: var(--accent);
   border-radius: 999px;
-  padding: 5px 14px;
-  font-size: 13px;
+  padding: 7px 16px;
+  font-size: 15px;
   font-weight: 700;
 }
 
@@ -196,16 +227,16 @@ h3 {
   border: 0;
   background: var(--accent-soft);
   color: var(--accent);
-  width: 34px;
-  height: 30px;
+  width: 40px;
+  height: 36px;
   font-size: 18px;
   font-weight: 700;
 }
 
 .stepper span {
-  min-width: 72px;
+  min-width: 84px;
   text-align: center;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--accent);
 }
@@ -255,7 +286,7 @@ h3 {
 }
 
 .score small {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
 }
 
@@ -268,11 +299,7 @@ h3 {
 /* Checklist */
 
 .filters {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background: var(--bg);
-  padding: 8px 0 10px;
+  padding: 8px 0 12px;
 }
 
 .search {
@@ -283,21 +310,18 @@ h3 {
   padding: 10px 14px;
 }
 
-.chips {
+.wrap-chips {
   display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding: 10px 0 2px;
-  scrollbar-width: none;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .chip {
-  flex: none;
   border: 1px solid var(--line);
   background: var(--card);
   border-radius: 999px;
-  padding: 5px 12px;
-  font-size: 13px;
+  padding: 7px 14px;
+  font-size: 15px;
   white-space: nowrap;
 }
 
@@ -318,8 +342,80 @@ h3 {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* The panel's bar sits beside the "tried only" box; its open body takes the full row below. */
+.filter-panel {
+  display: contents;
+}
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.filter-toggle {
+  display: inline-flex;
+  align-items: center;
   gap: 8px;
-  margin-top: 8px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.filter-toggle.on {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.badge {
+  min-width: 22px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 13px;
+  text-align: center;
+  padding: 0 6px;
+}
+
+.caret {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.link {
+  border: 0;
+  background: none;
+  padding: 0;
+  font-size: 15px;
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.filter-body {
+  order: 3;
+  flex-basis: 100%;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 14px 14px;
+}
+
+.filter-body .label {
+  margin: 4px 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.filter-body .label + .wrap-chips + .label {
+  margin-top: 14px;
 }
 
 .segmented {
@@ -333,8 +429,8 @@ h3 {
 .seg {
   border: 0;
   background: transparent;
-  padding: 5px 12px;
-  font-size: 13px;
+  padding: 8px 14px;
+  font-size: 15px;
 }
 
 .seg.on {
@@ -347,7 +443,7 @@ h3 {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: 15px;
   color: var(--muted);
 }
 
@@ -381,7 +477,7 @@ h3 {
 }
 
 .place-name b {
-  font-size: 15px;
+  font-size: 17px;
 }
 
 .alt {
@@ -392,7 +488,7 @@ h3 {
 
 .place-name small {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -442,7 +538,7 @@ h3 {
   align-items: center;
   gap: 8px;
   margin-top: 14px;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--muted);
 }
 
@@ -454,7 +550,7 @@ h3 {
 }
 
 .places {
-  scroll-margin-top: 170px;
+  scroll-margin-top: 16px;
 }
 
 .dock {
@@ -547,7 +643,7 @@ h3 {
 }
 
 .report-facts dt {
-  font-size: 12px;
+  font-size: 14px;
   opacity: 0.85;
 }
 
@@ -559,7 +655,7 @@ h3 {
 
 .report-facts small {
   display: block;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   opacity: 0.85;
 }
@@ -570,16 +666,16 @@ h3 {
 
 .label {
   margin: 0 0 6px;
-  font-size: 12px;
+  font-size: 14px;
   opacity: 0.85;
 }
 
 .bar {
   display: grid;
-  grid-template-columns: 110px 1fr 40px;
+  grid-template-columns: 120px 1fr 44px;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: 15px;
   margin-bottom: 6px;
 }
 
@@ -598,7 +694,7 @@ h3 {
 
 .report-foot {
   margin: 14px 0 0;
-  font-size: 11px;
+  font-size: 12px;
   opacity: 0.7;
   text-align: right;
 }
@@ -625,7 +721,7 @@ h3 {
 
 .rank small {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .rank.numbered {
@@ -696,7 +792,7 @@ h3 {
 
 footer {
   margin-top: 24px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
   text-align: center;
 }

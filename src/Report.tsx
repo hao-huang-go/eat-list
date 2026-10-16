@@ -1,6 +1,7 @@
 import type { Stats } from "./api";
 import { cuisineLabel, omnivoreLabel, tasteLabel } from "./cuisines";
 import { translate, type Lang, type MessageKey } from "./i18n";
+import { ShareButton } from "./ShareButton";
 import { buildReport } from "./yearReport";
 import { RESTAURANTS, restaurantNames, type Restaurant } from "./restaurants";
 
@@ -9,10 +10,12 @@ interface Props {
   year: number;
   visits: Record<string, number>;
   stats: Stats | null;
-  onEdit: () => void;
+  shared?: boolean; // viewing someone else's report from a link
+  shareId?: string | null;
+  onEdit?: () => void;
 }
 
-export function Report({ lang, year, visits, stats, onEdit }: Props) {
+export function Report({ lang, year, visits, stats, shared = false, shareId = null, onEdit }: Props) {
   const t = (key: MessageKey, vars?: Record<string, string | number>) => translate(lang, key, vars);
   const r = buildReport(visits, stats);
   const name = (x: Restaurant) => {
@@ -36,7 +39,9 @@ export function Report({ lang, year, visits, stats, onEdit }: Props) {
           <span> / {RESTAURANTS.length}</span>
         </p>
         <p className="report-visits">{t("reportVisits", { n: r.totalVisits })}</p>
-        <p className="report-beat">{r.beatPct === null ? t("beatSolo") : t("beat", { n: r.beatPct })}</p>
+        <p className="report-beat">
+          {r.beatPct === null ? (shared ? t("beatSoloShared") : t("beatSolo")) : t("beat", { n: r.beatPct })}
+        </p>
 
         <dl className="report-facts">
           {r.favourite && (
@@ -48,7 +53,7 @@ export function Report({ lang, year, visits, stats, onEdit }: Props) {
             </div>
           )}
           <div>
-            <dt>{t("taste")}</dt>
+            <dt>{t(shared ? "tasteShared" : "taste")}</dt>
             <dd>{r.taste ? tasteLabel(r.taste, lang) : omnivoreLabel(lang)}</dd>
           </div>
           {r.gem && (
@@ -75,9 +80,9 @@ export function Report({ lang, year, visits, stats, onEdit }: Props) {
         )}
         <p className="report-foot">{t("title")} · eat-list</p>
       </div>
-      <p className="hint center">{t("shareHint")}</p>
+      {!shared && shareId && <ShareButton lang={lang} id={shareId} />}
 
-      {r.todo.length > 0 && (
+      {!shared && r.todo.length > 0 && (
         <div className="panel">
           <h3>{t("todo")}</h3>
           <ul className="rank">
@@ -110,9 +115,11 @@ export function Report({ lang, year, visits, stats, onEdit }: Props) {
         </div>
       )}
 
-      <button className="secondary wide" onClick={onEdit}>
-        {t("edit")}
-      </button>
+      {onEdit && (
+        <button className="secondary wide" onClick={onEdit}>
+          {t("edit")}
+        </button>
+      )}
     </section>
   );
 }

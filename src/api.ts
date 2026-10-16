@@ -61,6 +61,16 @@ export async function fetchRanking(): Promise<Ranking> {
   return json(await fetch("/api/ranking", { headers: { "x-device-id": deviceId() } }));
 }
 
+export interface SharedReport {
+  year: number;
+  visits: Record<string, number>;
+  stats: Stats;
+}
+
+export async function fetchSharedReport(id: string): Promise<SharedReport> {
+  return json(await fetch(`/api/report?id=${encodeURIComponent(id)}`));
+}
+
 export async function fetchStats(id: string): Promise<CheckinResult> {
   return json(await fetch(`/api/checkin?id=${encodeURIComponent(id)}`));
 }

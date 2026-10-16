@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { fetchRanking, type Ranking as RankingData } from "./api";
-import { AreaPicker } from "./AreaPicker";
 import { cuisineLabel, type Cuisine } from "./cuisines";
-import { CuisineChips } from "./CuisineChips";
-import { matchesArea, matchesCuisine, type Area } from "./filters";
+import { FilterPanel } from "./FilterPanel";
+import { matchesAreas, matchesCuisines, type Area } from "./filters";
 import { translate, type Lang, type MessageKey } from "./i18n";
 import { RESTAURANTS, restaurantNames } from "./restaurants";
 
@@ -19,15 +18,15 @@ export function Ranking({ lang, mine }: Props) {
   const t = (key: MessageKey, vars?: Record<string, string | number>) => translate(lang, key, vars);
   const [data, setData] = useState<RankingData | null>(null);
   const [failed, setFailed] = useState(false);
-  const [cuisine, setCuisine] = useState<Cuisine | null>(null);
-  const [area, setArea] = useState<Area>("all");
+  const [cuisines, setCuisines] = useState<Cuisine[]>([]);
+  const [areas, setAreas] = useState<Area[]>([]);
 
   useEffect(() => {
     fetchRanking().then(setData).catch(() => setFailed(true));
   }, []);
 
   const rows = data
-    ? RESTAURANTS.filter((r) => data.restaurants[r.id] && matchesArea(r, area) && matchesCuisine(r, cuisine))
+    ? RESTAURANTS.filter((r) => data.restaurants[r.id] && matchesAreas(r, areas) && matchesCuisines(r, cuisines))
         .map((r) => ({ r, visits: data.restaurants[r.id][0], people: data.restaurants[r.id][1] }))
         .sort((a, b) => b.visits - a.visits || b.people - a.people)
         .slice(0, TOP)
@@ -36,9 +35,16 @@ export function Ranking({ lang, mine }: Props) {
   return (
     <section className="ranking">
       <div className="filters">
-        <CuisineChips lang={lang} value={cuisine} onChange={setCuisine} />
         <div className="toggles">
-          <AreaPicker lang={lang} value={area} onChange={setArea} />
+          <FilterPanel
+            lang={lang}
+            cuisines={cuisines}
+            areas={areas}
+            onChange={(next) => {
+              setCuisines(next.cuisines);
+              setAreas(next.areas);
+            }}
+          />
           {data && <span className="hint">{t("rankPeople", { n: data.people })}</span>}
         </div>
       </div>

@@ -93,6 +93,12 @@ export async function checkinStats(db: SupabaseClient, id: string): Promise<Chec
   return (data as CheckinStats | null) ?? null;
 }
 
+export async function reportVisits(db: SupabaseClient, id: string): Promise<Record<string, number>> {
+  const { data, error } = await db.rpc("food_report_visits", { p_id: id });
+  if (error) throw error;
+  return (data ?? {}) as Record<string, number>;
+}
+
 export async function participantCount(db: SupabaseClient): Promise<number> {
   const { count, error } = await db
     .from("food_checkins")

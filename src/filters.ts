@@ -1,8 +1,9 @@
 import type { Cuisine } from "./cuisines";
 import { RESTAURANTS, type Restaurant } from "./restaurants";
 
-// Where a restaurant is: the CBD, or a named suburb outside it. Chains spread across the CBD count as CBD.
-export type Area = "all" | "cbd" | "outside" | `suburb:${string}`;
+// An area filter is "cbd", "outside" (anywhere outside the CBD) or "suburb:<name>".
+// Chains spread across the CBD count as CBD.
+export type Area = "cbd" | "outside" | `suburb:${string}`;
 
 export const inCbd = (r: Restaurant) => r.area.startsWith("CBD");
 
@@ -16,11 +17,11 @@ export const SUBURBS: string[] = (() => {
     .map(([area]) => area);
 })();
 
-export function matchesArea(r: Restaurant, area: Area): boolean {
-  if (area === "all") return true;
-  if (area === "cbd") return inCbd(r);
-  if (area === "outside") return !inCbd(r);
-  return r.area === area.slice("suburb:".length);
-}
+const matchesOneArea = (r: Restaurant, area: Area) =>
+  area === "cbd" ? inCbd(r) : area === "outside" ? !inCbd(r) : r.area === area.slice("suburb:".length);
 
-export const matchesCuisine = (r: Restaurant, cuisine: Cuisine | null) => !cuisine || r.cuisine === cuisine;
+// Nothing picked means no filter; otherwise a place matches any of the picked options.
+export const matchesAreas = (r: Restaurant, areas: Area[]) => areas.length === 0 || areas.some((a) => matchesOneArea(r, a));
+export const matchesCuisines = (r: Restaurant, cuisines: Cuisine[]) => cuisines.length === 0 || cuisines.includes(r.cuisine);
+
+export const toggle = <T,>(list: T[], value: T): T[] => (list.includes(value) ? list.filter((x) => x !== value) : [...list, value]);
