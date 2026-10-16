@@ -106,7 +106,7 @@ export function Report({ lang, year, items, stats, onEdit }: Props) {
           <div className="hist-axis">
             <span>0</span>
             <span>50</span>
-            <span>100</span>
+            <span>100+</span>
           </div>
           <p className="hint">{t("distributionNote", { n: stats.n, median: Math.round(stats.median) })}</p>
         </div>

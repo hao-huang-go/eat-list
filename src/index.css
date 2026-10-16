@@ -171,6 +171,44 @@ h3 {
   font-weight: 600;
 }
 
+.toggles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.segmented {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--card);
+}
+
+.seg {
+  border: 0;
+  background: transparent;
+  padding: 5px 12px;
+  font-size: 13px;
+}
+
+.seg.on {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
 .places {
   list-style: none;
   margin: 0;

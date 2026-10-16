@@ -10,12 +10,19 @@ interface Props {
   onChange: (items: Record<string, Frequency>) => void;
 }
 
+type Scope = "all" | "cbd" | "suburbs";
+const SCOPES: Scope[] = ["all", "cbd", "suburbs"];
+const SCOPE_KEYS: Record<Scope, MessageKey> = { all: "areaAll", cbd: "areaCbd", suburbs: "areaSuburbs" };
+const inCbd = (area: string) => area.startsWith("CBD");
+
 const FREQ_KEYS: Record<Frequency, MessageKey> = { 1: "freq1", 2: "freq2", 3: "freq3", 4: "freq4" };
 
 export function Checklist({ lang, items, onChange }: Props) {
   const t = (key: MessageKey, vars?: Record<string, string | number>) => translate(lang, key, vars);
   const [cuisine, setCuisine] = useState<Cuisine | null>(null);
   const [query, setQuery] = useState("");
+  const [scope, setScope] = useState<Scope>("all");
+  const [mineOnly, setMineOnly] = useState(false);
 
   const counts = useMemo(() => {
     const m = new Map<Cuisine, number>();
@@ -27,6 +34,8 @@ export function Checklist({ lang, items, onChange }: Props) {
   const shown = RESTAURANTS.filter(
     (r) =>
       (!cuisine || r.cuisine === cuisine) &&
+      (scope === "all" || (scope === "cbd") === inCbd(r.area)) &&
+      (!mineOnly || items[r.id] !== undefined) &&
       (!q || (r.name ?? "").toLowerCase().includes(q) || (r.zh ?? "").includes(q) || r.area.toLowerCase().includes(q)),
   );
 
@@ -50,6 +59,19 @@ export function Checklist({ lang, items, onChange }: Props) {
               {cuisineLabel(c, lang)} <small>{counts.get(c)}</small>
             </button>
           ))}
+        </div>
+        <div className="toggles">
+          <div className="segmented" role="group">
+            {SCOPES.map((s) => (
+              <button key={s} className={scope === s ? "seg on" : "seg"} onClick={() => setScope(s)}>
+                {t(SCOPE_KEYS[s])}
+              </button>
+            ))}
+          </div>
+          <label className="check">
+            <input type="checkbox" checked={mineOnly} onChange={(e) => setMineOnly(e.target.checked)} />
+            {t("mineOnly")}
+          </label>
         </div>
         <p className="hint">{t("freqHint")}</p>
       </div>
