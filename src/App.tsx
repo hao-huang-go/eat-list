@@ -5,7 +5,8 @@ import { detectLang, saveLang, translate, type Lang, type MessageKey } from "./i
 import { Ranking } from "./Ranking";
 import { Report } from "./Report";
 import { RESTAURANTS } from "./restaurants";
-import { loadSaved, storeSaved, today, visitsFromDraft, type Saved } from "./saved";
+import { MAX_INITIAL_VISITS } from "./frequency";
+import { loadSaved, storeSaved, today, type Saved } from "./saved";
 import { visitSource } from "./source";
 import { Suggest } from "./Suggest";
 
@@ -55,7 +56,7 @@ export default function App() {
       persist((prev) => ({
         id: result.id,
         draft: {},
-        visits: visitsFromDraft(prev.draft),
+        visits: { ...prev.draft },
         addedOn: Object.fromEntries(Object.keys(prev.draft).map((id) => [id, day])),
       }));
       setStats(result.stats);
@@ -148,11 +149,12 @@ export default function App() {
             visits={saved.visits}
             addedToday={(id) => saved.addedOn[id] === today()}
             adding={adding}
-            onPick={(id, freq) =>
+            onStep={(id, delta) =>
               persist((prev) => {
                 const draft = { ...prev.draft };
-                if (draft[id] === freq) delete draft[id];
-                else draft[id] = freq;
+                const n = Math.min(MAX_INITIAL_VISITS, (draft[id] ?? 0) + delta);
+                if (n <= 0) delete draft[id];
+                else draft[id] = n;
                 return { ...prev, draft };
               })
             }

@@ -1,5 +1,4 @@
 import { deviceId } from "./device";
-import type { Frequency } from "./frequency";
 import { visitSource } from "./source";
 
 export interface Stats {
@@ -33,7 +32,7 @@ async function json<T>(res: Response): Promise<T> {
   return body as T;
 }
 
-export async function saveCheckin(items: Record<string, Frequency>): Promise<CheckinResult> {
+export async function saveCheckin(items: Record<string, number>): Promise<CheckinResult> {
   return json(
     await fetch("/api/checkin", {
       method: "POST",

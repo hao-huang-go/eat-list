@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { BAND_VISITS, isFrequency } from "../src/frequency.js";
+import { isInitialVisits } from "../src/frequency.js";
 import { RESTAURANT_IDS } from "../src/restaurants.js";
 import { InputError } from "./request.js";
 
@@ -17,9 +17,9 @@ export function parseCheckin(body: unknown): CheckinInput {
   const b = body as Record<string, unknown>;
   if (typeof b.items !== "object" || b.items === null || Array.isArray(b.items)) throw new InputError("items");
   const items: CheckinInput["items"] = [];
-  for (const [id, freq] of Object.entries(b.items as Record<string, unknown>)) {
-    if (!RESTAURANT_IDS.has(id) || !isFrequency(freq)) throw new InputError("items");
-    items.push({ id, visits: BAND_VISITS[freq] });
+  for (const [id, visits] of Object.entries(b.items as Record<string, unknown>)) {
+    if (!RESTAURANT_IDS.has(id) || !isInitialVisits(visits)) throw new InputError("items");
+    items.push({ id, visits });
   }
   return { items, source: typeof b.source === "string" && SOURCE_PATTERN.test(b.source) ? b.source : null };
 }

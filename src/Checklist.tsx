@@ -3,26 +3,25 @@ import { AreaPicker } from "./AreaPicker";
 import { cuisineLabel, type Cuisine } from "./cuisines";
 import { CuisineChips } from "./CuisineChips";
 import { matchesArea, matchesCuisine, type Area } from "./filters";
-import { FREQUENCIES, type Frequency } from "./frequency";
+import { MAX_INITIAL_VISITS } from "./frequency";
 import { translate, type Lang, type MessageKey } from "./i18n";
 import { RESTAURANTS, restaurantNames } from "./restaurants";
 
 interface Props {
   lang: Lang;
-  // Before submitting: rough bands per restaurant. After: visit counts, only ever added to.
+  // Before submitting: remembered visit counts, adjustable. After: counts that are only ever added to.
   submitted: boolean;
-  draft: Record<string, Frequency>;
+  draft: Record<string, number>;
   visits: Record<string, number>;
   addedToday: (id: string) => boolean;
   adding: string | null;
-  onPick: (id: string, freq: Frequency) => void; // picking the band already chosen clears it
+  onStep: (id: string, delta: number) => void; // a count reaching 0 takes the restaurant off the draft
   onAddVisit: (id: string) => void;
 }
 
 const PAGE_SIZE = 10;
-const FREQ_KEYS: Record<Frequency, MessageKey> = { 1: "freq1", 2: "freq2", 3: "freq3", 4: "freq4" };
 
-export function Checklist({ lang, submitted, draft, visits, addedToday, adding, onPick, onAddVisit }: Props) {
+export function Checklist({ lang, submitted, draft, visits, addedToday, adding, onStep, onAddVisit }: Props) {
   const t = (key: MessageKey, vars?: Record<string, string | number>) => translate(lang, key, vars);
   const [cuisine, setCuisine] = useState<Cuisine | null>(null);
   const [query, setQuery] = useState("");
@@ -70,7 +69,7 @@ export function Checklist({ lang, submitted, draft, visits, addedToday, adding, 
         {visible.map((r) => {
           const [primary, secondary] = restaurantNames(r, lang);
           const count = visits[r.id];
-          const picked = draft[r.id];
+          const drafted = draft[r.id];
           return (
             <li key={r.id} className={isMine(r.id) ? "place eaten" : "place"}>
               <div className="place-name">
@@ -90,12 +89,22 @@ export function Checklist({ lang, submitted, draft, visits, addedToday, adding, 
                   </button>
                 </div>
               ) : (
-                <div className="freqs" role="group" aria-label={primary}>
-                  {FREQUENCIES.map((f) => (
-                    <button key={f} aria-pressed={picked === f} className={picked === f ? "freq on" : "freq"} onClick={() => onPick(r.id, f)}>
-                      {t(FREQ_KEYS[f])}
+                <div className="visit">
+                  {drafted === undefined ? (
+                    <button className="plus" onClick={() => onStep(r.id, 1)}>
+                      {t("firstVisit")}
                     </button>
-                  ))}
+                  ) : (
+                    <div className="stepper" role="group" aria-label={primary}>
+                      <button onClick={() => onStep(r.id, -1)} aria-label="−1">
+                        −
+                      </button>
+                      <span>{t("visitCount", { n: drafted })}</span>
+                      <button onClick={() => onStep(r.id, 1)} disabled={drafted >= MAX_INITIAL_VISITS} aria-label="+1">
+                        +
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </li>
